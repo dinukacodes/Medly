@@ -60,4 +60,71 @@ curl -X POST "http://localhost:8000/api/upload-evidence" -F "files=@sample_evide
 ```json
 {
   "file_ids": ["unique_file_id"],
-  "status":
+  "status": "uploaded"
+}
+```
+- **Explanation**: The response includes a `file_ids` array with a unique identifier for the uploaded file (e.g., a UUID like `123e4567-e89b-12d3-a456-426614174000`) and a status confirming the upload.
+- **Action**: Note down the `file_id` (e.g., `unique_file_id`). You’ll need it for the next step.
+
+---
+
+## Step 2: Start a Diagnosis Session
+
+Next, initiate a diagnosis session by sending patient data and the evidence file ID from Step 1. This step triggers the backend to process the input and begin the diagnosis.
+
+### Curl Command
+```bash
+curl -X POST "http://localhost:8000/api/start-diagnosis" -H "Content-Type: application/json" -d '{
+  "model": "gpt-4o",
+  "patient": {
+    "name": "John Doe",
+    "age": 45,
+    "gender": "male",
+    "symptoms": ["fever", "cough", "fatigue"],
+    "medications": ["ibuprofen"]
+  },
+  "evidence": ["unique_file_id"]
+}'
+```
+- `-H "Content-Type: application/json"`: Sets the request header to indicate JSON data.
+- `-d '{...}'`: The JSON payload includes:
+  - `model`: The AI model to use (e.g., `gpt-4o`).
+  - `patient`: Patient details like name, age, gender, symptoms, and medications.
+  - `evidence`: An array containing the `file_id` from Step 1 (replace `unique_file_id` with the actual ID).
+
+### Expected Response
+```json
+{
+  "session_id": "unique_session_id",
+  "status": "started"
+}
+```
+- **Explanation**: The response provides a `session_id` (e.g., `abc123-def456`) and confirms the session has started.
+- **Action**: Note down the `session_id`. It’s required for streaming the diagnosis in the next step.
+
+---
+
+## Step 3: Stream Diagnosis Reasoning Steps
+
+Use the session ID to stream the diagnosis reasoning process in real-time. This endpoint uses Server-Sent Events (SSE) to push updates as the backend analyzes the data.
+
+### Curl Command
+```bash
+curl "http://localhost:8000/api/stream-diagnosis/unique_session_id"
+```
+- Replace `unique_session_id` with the actual `session_id` from Step 2.
+
+### Expected Output
+The response will be a continuous stream of SSE messages, each prefixed with `data:`:
+```
+data: 2024-10-18 12:34:56: Evidence processed: [extracted text from PDF]
+
+data: 2024-10-18 12:35:00: Symptom analysis: [analysis details]
+
+data: 2024-10-18 12:35:05: Evidence evaluation: [evaluation details]
+
+...
+```
+
+... (Rest of the document remains the same)
+
