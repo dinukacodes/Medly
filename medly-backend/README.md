@@ -123,8 +123,87 @@ data: 2024-10-18 12:35:00: Symptom analysis: [analysis details]
 
 data: 2024-10-18 12:35:05: Evidence evaluation: [evaluation details]
 
-...
-```
+- **Explanation**: Each `data:` line represents a reasoning step (e.g., processing evidence, analyzing symptoms). The stream continues until the diagnosis is complete. Timestamps and details depend on the backend’s implementation.
+- **Tip**: To stop the stream, press `Ctrl+C` in the terminal.
 
-... (Rest of the document remains the same)
+---
+
+## Step 4: Submit Feedback
+
+After reviewing the diagnosis, submit feedback to log your interaction. This step is optional but helps test the feedback endpoint.
+
+### Curl Command
+```bash
+curl -X POST "http://localhost:8000/api/submit-feedback" -H "Content-Type: application/json" -d '{
+  "session_id": "unique_session_id",
+  "action": "accept",
+  "feedback": "The diagnosis seems accurate based on the provided evidence."
+}'
+```
+- Replace `unique_session_id` with the actual `session_id`.
+- `action`: Options like `accept`, `reject`, or custom values defined by the backend.
+- `feedback`: A text comment on the diagnosis.
+
+### Expected Response
+```json
+{
+  "status": "submitted"
+}
+```
+- **Explanation**: Confirms the feedback was successfully recorded.
+
+---
+
+## Step 5: Retrieve Patient History (Optional)
+
+Test the patient history endpoint by retrieving past medical records for the patient, if available.
+
+### Curl Command
+```bash
+curl "http://localhost:8000/api/patient-history/John%20Doe"
+```
+- `John%20Doe`: URL-encoded patient name (space replaced with `%20`).
+
+### Expected Response
+```json
+{
+  "name": "John Doe",
+  "history": [
+    {
+      "date": "2022-01-15",
+      "condition": "Flu",
+      "treatment": "Oseltamivir"
+    },
+    {
+      "date": "2023-03-10",
+      "condition": "Hypertension",
+      "treatment": "Lisinopril"
+    }
+  ]
+}
+```
+- **Explanation**: Returns the patient’s medical history. If no history exists, you may get an empty `history` array (`[]`). To populate history, you might need to manually insert records into the database using SQL (not covered here).
+
+---
+
+## Troubleshooting
+
+If you encounter issues, try these solutions:
+
+- **No Response from Streaming Endpoint**:
+  - Verify the `session_id` is correct.
+  - Check server logs (in the terminal where `uvicorn` is running) for errors like model failures or processing delays.
+- **File Upload Fails**:
+  - Ensure the file path in `-F "files=@sample_evidence.pdf"` is correct. Use an absolute path if needed (e.g., `/path/to/sample_evidence.pdf`).
+  - Confirm the file exists and is readable.
+- **Database Errors**:
+  - Ensure the database is initialized with required tables (e.g., for patient history). Check your backend’s setup instructions.
+- **Server Not Running**:
+  - Confirm the server is active on `http://localhost:8000`. Test with `curl http://localhost:8000` (response depends on root endpoint setup).
+
+---
+
+## Conclusion
+
+This guide walks you through testing the Healthcare Diagnostic Backend system using API calls with `curl`. By executing these steps—uploading evidence, starting a diagnosis, streaming reasoning, submitting feedback, and retrieving history—you can verify the system’s core functionality. Customize patient data and evidence files to test various scenarios. If all steps return expected responses, the system is working correctly!
 
