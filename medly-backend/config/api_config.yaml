@@ -1,0 +1,5 @@
+openai_api_key: "your-openai-api-key-here"
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "app.log"

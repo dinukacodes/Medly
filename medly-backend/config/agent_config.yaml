@@ -1,0 +1,16 @@
+data_processor:
+  max_iterations: 5
+symptom_analyzer:
+  max_iterations: 5
+urgency_router:
+  max_iterations: 3
+differential_generator:
+  max_iterations: 5
+certainty_evaluator:
+  max_iterations: 3
+evidence_evaluator:
+  max_iterations: 3
+specialty_router:
+  max_iterations: 3
+treatment_advisor:
+  max_iterations: 5

@@ -1,0 +1,3 @@
+diagnosis_process:
+  max_steps: 8
+  timeout: 300  # seconds
